@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity
 
     private ArrayList<Group> mGroups;
 
+    private IndicatorClickHandler mIndicatorClickHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -31,6 +33,16 @@ public class MainActivity extends AppCompatActivity
         initializeData();
 
         initializeView();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        if(mIndicatorClickHandler != null)
+        {
+            mIndicatorClickHandler.removeCallbacksAndMessages(null);
+        }
+        super.onDestroy();
     }
 
     private void initializeData()
@@ -70,9 +82,9 @@ public class MainActivity extends AppCompatActivity
         mExpandableListView = (ExpandableListView)findViewById(R.id.expendlist);
         mExpandableListView.setGroupIndicator(null);
 
-        IndicatorClickHandler handler = new IndicatorClickHandler(this);
+        mIndicatorClickHandler = new IndicatorClickHandler(this);
 
-        adapter = new MyExpandableListViewAdapter(MainActivity.this, mGroups, handler);
+        adapter = new MyExpandableListViewAdapter(MainActivity.this, mGroups, mIndicatorClickHandler);
 
         mExpandableListView.setAdapter(adapter);
 
