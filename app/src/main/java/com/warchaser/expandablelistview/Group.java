@@ -108,6 +108,6 @@ public class Group
 
     public int getChildrenCheckedCount()
     {
-        return this.mChildrenCheckedCount;
+        return mChildrenCheckedCount;
     }
 }
