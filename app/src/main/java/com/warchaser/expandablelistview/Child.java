@@ -58,8 +58,8 @@ public class Child
         this.mCharge = mCharge;
     }
 
-    public void toggle()
+    public boolean toggle()
     {
-        this.mIsChildChecked = !this.mIsChildChecked;
+        return this.mIsChildChecked = !this.mIsChildChecked;
     }
 }

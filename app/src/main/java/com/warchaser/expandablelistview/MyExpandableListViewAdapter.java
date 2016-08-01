@@ -25,6 +25,8 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
     {
         this.context = context;
         this.mGroups = groups;
+
+
     }
 
     /**
@@ -169,8 +171,8 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
 
         groupHolder.txt.setText(mGroups.get(groupPosition).getGroupName());
         groupHolder.mCheckBox.setFocusable(false);
-        groupHolder.mCheckBox.setChecked(group.getIsGroupCheckd());
-        groupHolder.mCheckBox.setOnClickListener(new Group_CheckBox_Click(groupPosition));
+        groupHolder.mCheckBox.setChecked(group.getIsGroupChecked());
+        groupHolder.mCheckBox.setOnClickListener(new GroupCheckBoxClick(groupPosition));
         return convertView;
     }
 
@@ -211,7 +213,7 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
 //        itemHolder.img.setBackgroundResource(item_list2.get(groupPosition).get(childPosition));
         itemHolder.mCheckBox.setFocusable(false);
         itemHolder.mCheckBox.setChecked(child.getIsChildChecked());
-//        itemHolder.mCheckBox.setOnClickListener(new Group_CheckBox_Click(groupPosition));
+        itemHolder.mCheckBox.setOnClickListener(new ChildCheckBoxClick(groupPosition, childPosition));
         return convertView;
     }
 
@@ -231,11 +233,11 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
     }
 
     /** 勾選 Group CheckBox 時，存 Group CheckBox 的狀態，以及改變 Child CheckBox 的狀態 */
-    class Group_CheckBox_Click implements View.OnClickListener
+    private class GroupCheckBoxClick implements View.OnClickListener
     {
         private int groupPosition;
 
-        Group_CheckBox_Click(int groupPosition)
+        GroupCheckBoxClick(int groupPosition)
         {
             this.groupPosition = groupPosition;
         }
@@ -246,9 +248,43 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
 
             // 將 Children 的 isChecked 全面設成跟 Group 一樣
             int size = mGroups.get(groupPosition).getChildren().size();
-            boolean groupIsChecked = mGroups.get(groupPosition).getIsGroupCheckd();
+            boolean groupIsChecked = mGroups.get(groupPosition).getIsGroupChecked();
             for (int i = 0; i < size; i++)
                 mGroups.get(groupPosition).getChildren().get(i).setIsChildChecked(groupIsChecked);
+
+            // 注意，一定要通知 ExpandableListView 資料已經改變，ExpandableListView 會重新產生畫面
+            notifyDataSetChanged();
+        }
+    }
+
+    private class ChildCheckBoxClick implements View.OnClickListener
+    {
+        private int mGroupPosi;
+        private int mChildPosi;
+
+        public ChildCheckBoxClick(int groupPosi, int childPosi)
+        {
+            this.mChildPosi = childPosi;
+            this.mGroupPosi = groupPosi;
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            mGroups.get(mGroupPosi).childToggle(mChildPosi);
+
+            // 檢查 Child CheckBox 是否有全部勾選，以控制 Group CheckBox
+            int childrenCount = mGroups.get(mGroupPosi).getChildren().size();
+//            boolean childrenAllIsChecked = true;
+//            for (int i = 0; i < childrenCount; i++)
+//            {
+//                if (!mGroups.get(mGroupPosi).getChildren().get(i).getIsChildChecked())
+//                    childrenAllIsChecked = false;
+//
+//                System.out.println(i);
+//            }
+
+            mGroups.get(mGroupPosi).setIsGroupChecked(mGroups.get(mGroupPosi).getChildrenCheckedCount() == childrenCount);
 
             // 注意，一定要通知 ExpandableListView 資料已經改變，ExpandableListView 會重新產生畫面
             notifyDataSetChanged();

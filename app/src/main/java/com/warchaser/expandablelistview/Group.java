@@ -15,19 +15,30 @@ public class Group
 
     private ArrayList<Child> mChildren;
 
+    private int mChildrenCheckedCount;
+
     public Group()
     {
 
     }
 
-    public boolean getIsGroupCheckd()
+    public boolean getIsGroupChecked()
     {
         return mIsGroupChecked;
     }
 
-    public void setIsGroupCheckd(boolean mIsGroupChecked)
+    public void setIsGroupChecked(boolean mIsGroupChecked)
     {
         this.mIsGroupChecked = mIsGroupChecked;
+
+//        if(mIsGroupChecked)
+//        {
+//            mChildrenCheckedCount = mChildren.size();
+//        }
+//        else
+//        {
+//            mChildrenCheckedCount = 0;
+//        }
     }
 
     public String getGroupName()
@@ -58,10 +69,45 @@ public class Group
     public void setChildren(ArrayList<Child> mChildren)
     {
         this.mChildren = mChildren;
+
+        int size = mChildren.size();
+
+        if(size > 0)
+        {
+            for(int i = 0; i < size; i++)
+            {
+                if(mChildren.get(i).getIsChildChecked())
+                {
+                    mChildrenCheckedCount++;
+                }
+            }
+        }
     }
 
     public void toggle()
     {
         this.mIsGroupChecked = !this.mIsGroupChecked;
+
+        if(mIsGroupChecked)
+        {
+            mChildrenCheckedCount = mChildren.size();
+        }
+        else
+        {
+            mChildrenCheckedCount = 0;
+        }
+    }
+
+    public void childToggle(int childPosi)
+    {
+        if(mChildren.get(childPosi).toggle())
+            mChildrenCheckedCount++;
+        else
+            mChildrenCheckedCount--;
+    }
+
+    public int getChildrenCheckedCount()
+    {
+        return this.mChildrenCheckedCount;
     }
 }
