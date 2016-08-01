@@ -151,7 +151,6 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
             groupHolder.txt = (TextView)convertView.findViewById(R.id.txt);
             groupHolder.img = (ImageView)convertView.findViewById(R.id.img);
             groupHolder.mCheckBox = (CheckBox) convertView.findViewById(R.id.checkbox_group);
-            groupHolder.mCheckBox.setOnClickListener(new Group_CheckBox_Click(groupPosition));
             convertView.setTag(groupHolder);
         }
         else
@@ -171,6 +170,7 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
         groupHolder.txt.setText(mGroups.get(groupPosition).getGroupName());
         groupHolder.mCheckBox.setFocusable(false);
         groupHolder.mCheckBox.setChecked(group.getIsGroupCheckd());
+        groupHolder.mCheckBox.setOnClickListener(new Group_CheckBox_Click(groupPosition));
         return convertView;
     }
 
