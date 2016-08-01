@@ -1,6 +1,8 @@
 package com.warchaser.expandablelistview;
 
 import android.annotation.SuppressLint;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,12 +10,11 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
 {
 
-    private ExpandableListView expandableListView;
+    private ExpandableListView mExpandableListView;
 
     private MyExpandableListViewAdapter adapter;
 
@@ -64,42 +65,62 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeView()
     {
-        expandableListView = (ExpandableListView)findViewById(R.id.expendlist);
-        expandableListView.setGroupIndicator(null);
+        mExpandableListView = (ExpandableListView)findViewById(R.id.expendlist);
+        mExpandableListView.setGroupIndicator(null);
+
+        adapter = new MyExpandableListViewAdapter(MainActivity.this, mGroups, mIndicatorClickHandler);
+
+        mExpandableListView.setAdapter(adapter);
 
         // 监听组点击
-        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener()
+        mExpandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener()
         {
             @SuppressLint("NewApi")
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id)
             {
-                if (mGroups.get(groupPosition).getGroupName().isEmpty())
-                {
-                    return true;
-                }
 
-                return false;
+                adapter.handleGroupCheckBoxClick(groupPosition);
+                return true;
             }
         });
 
         // 监听每个分组里子控件的点击事件
-        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener()
+        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener()
         {
 
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id)
             {
-
-
                 Toast.makeText(MainActivity.this, "group=" + groupPosition + "---child=" + childPosition + "---" + mGroups.get(groupPosition).getChildren().get(childPosition).getChildName(), Toast.LENGTH_SHORT).show();
+                adapter.handleChildCheckBoxClick(groupPosition, childPosition);
                 return false;
             }
         });
-
-        adapter = new MyExpandableListViewAdapter(MainActivity.this, mGroups);
-
-        expandableListView.setAdapter(adapter);
-
     }
+
+    Handler mIndicatorClickHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(Message msg)
+        {
+            int groupPosition = msg.arg1;
+
+            int isExpanded = msg.arg2;
+
+            if(mExpandableListView != null)
+            {
+                if(isExpanded == 0)
+                {
+                    mExpandableListView.expandGroup(groupPosition);
+                }
+                else if(isExpanded == 1)
+                {
+                    mExpandableListView.collapseGroup(groupPosition);
+                }
+            }
+
+            super.handleMessage(msg);
+        }
+    };
 }

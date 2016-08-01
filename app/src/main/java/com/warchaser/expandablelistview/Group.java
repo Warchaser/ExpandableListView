@@ -30,15 +30,6 @@ public class Group
     public void setIsGroupChecked(boolean mIsGroupChecked)
     {
         this.mIsGroupChecked = mIsGroupChecked;
-
-//        if(mIsGroupChecked)
-//        {
-//            mChildrenCheckedCount = mChildren.size();
-//        }
-//        else
-//        {
-//            mChildrenCheckedCount = 0;
-//        }
     }
 
     public String getGroupName()

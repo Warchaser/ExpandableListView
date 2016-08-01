@@ -44,6 +44,8 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"
             android:gravity="right"
-            android:background="@mipmap/group_img"/>
+            android:background="@mipmap/group_img"
+            android:clickable="true"
+            android:focusable="false"/>
     </RelativeLayout>
 </LinearLayout>
