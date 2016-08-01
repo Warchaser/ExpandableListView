@@ -1,6 +1,7 @@
 package com.warchaser.expandablelistview;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -68,7 +70,9 @@ public class MainActivity extends AppCompatActivity
         mExpandableListView = (ExpandableListView)findViewById(R.id.expendlist);
         mExpandableListView.setGroupIndicator(null);
 
-        adapter = new MyExpandableListViewAdapter(MainActivity.this, mGroups, mIndicatorClickHandler);
+        IndicatorClickHandler handler = new IndicatorClickHandler(this);
+
+        adapter = new MyExpandableListViewAdapter(MainActivity.this, mGroups, handler);
 
         mExpandableListView.setAdapter(adapter);
 
@@ -99,28 +103,38 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    Handler mIndicatorClickHandler = new Handler()
+    private static class IndicatorClickHandler extends Handler
     {
+
+        WeakReference<MainActivity> mActivityReference;
+
+        IndicatorClickHandler(MainActivity activity)
+        {
+            mActivityReference = new WeakReference<MainActivity>(activity);
+        }
+
         @Override
         public void handleMessage(Message msg)
         {
+            final MainActivity activity = mActivityReference.get();
+
             int groupPosition = msg.arg1;
 
             int isExpanded = msg.arg2;
 
-            if(mExpandableListView != null)
+            if(activity != null && activity.mExpandableListView != null)
             {
                 if(isExpanded == 0)
                 {
-                    mExpandableListView.expandGroup(groupPosition);
+                    activity.mExpandableListView.expandGroup(groupPosition);
                 }
                 else if(isExpanded == 1)
                 {
-                    mExpandableListView.collapseGroup(groupPosition);
+                    activity.mExpandableListView.collapseGroup(groupPosition);
                 }
             }
 
             super.handleMessage(msg);
         }
-    };
+    }
 }
