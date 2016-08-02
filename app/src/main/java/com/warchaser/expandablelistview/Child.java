@@ -13,6 +13,8 @@ public class Child
 
     private String mCharge;
 
+    private float mPrice;
+
     public Child()
     {
 
@@ -61,5 +63,15 @@ public class Child
     public boolean toggle()
     {
         return this.mIsChildChecked = !this.mIsChildChecked;
+    }
+
+    public float getPrice()
+    {
+        return mPrice;
+    }
+
+    public void setPrice(float mPrice)
+    {
+        this.mPrice = mPrice;
     }
 }

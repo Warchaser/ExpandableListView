@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,6 +25,12 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
     private ArrayList<Group> mGroups;
 
     private Handler mHandler;
+
+    private boolean mIsAllSelected = false;
+
+    private IOnChildClickListener mOnChildClickListener;
+
+    private IOnGroupClickListener mOnGroupClickListener;
 
     public MyExpandableListViewAdapter(Context context, ArrayList<Group> groups, Handler handler)
     {
@@ -240,7 +247,9 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
 //        itemHolder.img.setBackgroundResource(item_list2.get(groupPosition).get(childPosition));
         itemHolder.mCheckBox.setFocusable(false);
         itemHolder.mCheckBox.setChecked(child.getIsChildChecked());
+
         itemHolder.mCheckBox.setOnClickListener(new ChildCheckBoxClickListener(groupPosition, childPosition));
+
         return convertView;
     }
 
@@ -272,7 +281,14 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
         @Override
         public void onClick(View v)
         {
+            if(mOnGroupClickListener != null)
+            {
+                mOnGroupClickListener.handleOnGroupClicked(groupPosition);
+                return ;
+            }
+
             handleGroupCheckBoxClick(groupPosition);
+
         }
     }
 
@@ -284,7 +300,9 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
         int size = mGroups.get(groupPosition).getChildren().size();
         boolean groupIsChecked = mGroups.get(groupPosition).getIsGroupChecked();
         for (int i = 0; i < size; i++)
+        {
             mGroups.get(groupPosition).getChildren().get(i).setIsChildChecked(groupIsChecked);
+        }
 
         // 注意，一定要通知 ExpandableListView 資料已經改變，ExpandableListView 會重新產生畫面
         notifyDataSetChanged();
@@ -304,6 +322,12 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
         @Override
         public void onClick(View v)
         {
+            if(mOnChildClickListener != null)
+            {
+                mOnChildClickListener.handleOnChildClicked(mGroupPosi, mChildPosi);
+                return ;
+            }
+
             handleChildCheckBoxClick(mGroupPosi, mChildPosi);
         }
     }
@@ -331,6 +355,46 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
         notifyDataSetChanged();
     }
 
+    public boolean selectOrDeSelectALL()
+    {
+        mIsAllSelected = !mIsAllSelected;
+
+        int size = mGroups.size();
+
+        for(int i = 0; i < size; i++)
+        {
+            Group group = mGroups.get(i);
+
+            group.setIsGroupChecked(mIsAllSelected);
+
+            int childrenSize = group.getChildren().size();
+
+            for(int y = 0; y < childrenSize; y++)
+            {
+                group.getChildren().get(y).setIsChildChecked(mIsAllSelected);
+            }
+        }
+
+        notifyDataSetChanged();
+
+        return mIsAllSelected;
+    }
+
+    public void setOnGroupClickListener(IOnGroupClickListener listener)
+    {
+        if(listener != null)
+        {
+            this.mOnGroupClickListener = listener;
+        }
+    }
+
+    public void setOnChildClickListener(IOnChildClickListener listener)
+    {
+        if(listener != null)
+        {
+            this.mOnChildClickListener = listener;
+        }
+    }
 }
 
 
