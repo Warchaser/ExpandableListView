@@ -89,16 +89,25 @@ public class Group
         }
     }
 
-    public void childToggle(int childPosi)
+    public boolean childToggle(int childPosi)
     {
-        if(mChildren.get(childPosi).toggle())
+        boolean isChecked = mChildren.get(childPosi).toggle();
+
+        if(isChecked)
             mChildrenCheckedCount++;
         else
             mChildrenCheckedCount--;
+
+        return isChecked;
     }
 
     public int getChildrenCheckedCount()
     {
         return mChildrenCheckedCount;
+    }
+
+    public void setChidrenCheckedCount(int count)
+    {
+        mChildrenCheckedCount = count;
     }
 }

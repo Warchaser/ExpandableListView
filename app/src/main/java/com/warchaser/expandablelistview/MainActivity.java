@@ -32,6 +32,10 @@ public class MainActivity extends AppCompatActivity
 
     private int mTotalChapterCount = 0;
 
+    private int mIntTotalNeed2PayCount = 0;
+
+    private boolean mIsAllSelected = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -140,18 +144,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                boolean isAllChecked = adapter.selectOrDeSelectALL();
+                mIsAllSelected = !mIsAllSelected;
 
-                mTitleBarCheckBox.setChecked(isAllChecked);
+                calculateCount2Show(0,0,mIsAllSelected,ButtonType.ALL);
 
-                if(isAllChecked)
-                {
-                    mChildSelectedCount = mTotalChapterCount;
-                }
-                else
-                {
-                    mChildSelectedCount = 0;
-                }
+                mTitleBarCheckBox.setChecked(mIsAllSelected);
 
                 mSelectedChapterCount.setText(mChildSelectedCount + "");
             }
@@ -161,19 +158,167 @@ public class MainActivity extends AppCompatActivity
         adapter.setOnChildClickListener(mOnChildClickListener);
     }
 
+    private void calculateCount2Show(int groupPosition, int childPosition, boolean buttonSelected, ButtonType buttonType)
+    {
+        switch (buttonType)
+        {
+            case ALL:
+
+                int sizeALL = mGroups.size();
+                mIntTotalNeed2PayCount = 0;
+
+                if(buttonSelected)
+                {
+                    mChildSelectedCount = mTotalChapterCount;
+                }
+                else
+                {
+                    mChildSelectedCount = 0;
+                }
+
+                for(int i = 0; i < sizeALL; i++)
+                {
+                    Group group = mGroups.get(i);
+
+                    int childrenSize = group.getChildren().size();
+
+                    group.setIsGroupChecked(buttonSelected);
+
+                    if(buttonSelected)
+                    {
+                        group.setChidrenCheckedCount(childrenSize);
+                    }
+                    else
+                    {
+                        group.setChidrenCheckedCount(0);
+                    }
+
+                    for(int y = 0; y < childrenSize; y++)
+                    {
+                        Child child = group.getChildren().get(y);
+
+                        if(buttonSelected)
+                        {
+                            if(!child.getIsChildChecked())
+                            {
+                                mIntTotalNeed2PayCount += group.getChildren().get(y).getPrice();
+                            }
+                        }
+
+                        child.setIsChildChecked(buttonSelected);
+                    }
+                }
+
+                break;
+            case GROUP:
+
+                Group group = mGroups.get(groupPosition);
+                group.toggle();
+
+                int sizeGroup = group.getChildren().size();
+                int operationPriceGroup = 0;
+                int operationSelectedCount = 0;
+                boolean groupIsChecked = group.getIsGroupChecked();
+
+                if(groupIsChecked)
+                {
+                    for(int i = 0; i < sizeGroup; i++)
+                    {
+                        if(!group.getChildren().get(i).getIsChildChecked())
+                        {
+                            operationPriceGroup += group.getChildren().get(i).getPrice();
+
+                            operationSelectedCount += 1;
+                        }
+
+                        group.getChildren().get(i).setIsChildChecked(true);
+                    }
+
+                    mIntTotalNeed2PayCount += operationPriceGroup;
+                    mChildSelectedCount += operationSelectedCount;
+                }
+                else
+                {
+                    for(int i = 0; i < sizeGroup; i++)
+                    {
+                        if(group.getChildren().get(i).getIsChildChecked())
+                        {
+                            operationPriceGroup += group.getChildren().get(i).getPrice();
+
+                            operationSelectedCount += 1;
+                        }
+
+                        group.getChildren().get(i).setIsChildChecked(false);
+                    }
+
+                    mIntTotalNeed2PayCount -= operationPriceGroup;
+                    mChildSelectedCount -= operationSelectedCount;
+                }
+
+                break;
+            case CHILD:
+
+                Group groupCHILDLEVEL = mGroups.get(groupPosition);
+
+                boolean checked = groupCHILDLEVEL.childToggle(childPosition);
+
+                int childrenCount = groupCHILDLEVEL.getChildren().size();
+
+                if(checked)
+                {
+                    mIntTotalNeed2PayCount += mGroups.get(groupPosition).getChildren().get(childPosition).getPrice();
+                    mChildSelectedCount += 1;
+                }
+                else
+                {
+                    mIntTotalNeed2PayCount -= mGroups.get(groupPosition).getChildren().get(childPosition).getPrice();
+                    mChildSelectedCount -= 1;
+                }
+
+                groupCHILDLEVEL.setIsGroupChecked(groupCHILDLEVEL.getChildrenCheckedCount() == childrenCount);
+
+                break;
+            default:
+                break;
+
+        }
+
+        updateTotalViewOnItemClicked();
+
+        adapter.notifyDataSetChanged();
+    }
+
+    private void updateTotalViewOnItemClicked()
+    {
+        if(mTitleBarCheckBox != null)
+        {
+            if(mChildSelectedCount == mTotalChapterCount)
+            {
+                mTitleBarCheckBox.setChecked(mIsAllSelected = true);
+            }
+            else
+            {
+                mTitleBarCheckBox.setChecked(mIsAllSelected = false);
+            }
+        }
+    }
+
     private class OnGroupClickListener implements IOnGroupClickListener
     {
         @Override
         public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id)
         {
-            adapter.handleGroupCheckBoxClick(groupPosition);
+//            adapter.handleGroupCheckBoxClick(groupPosition);
+            calculateCount2Show(groupPosition,0,false,ButtonType.GROUP);
+            mSelectedChapterCount.setText(mChildSelectedCount + "");
             return true;
         }
 
         @Override
         public void handleOnGroupClicked(int groupPosition)
         {
-            adapter.handleGroupCheckBoxClick(groupPosition);
+            calculateCount2Show(groupPosition,0,false,ButtonType.GROUP);
+            mSelectedChapterCount.setText(mChildSelectedCount + "");
         }
     }
 
@@ -183,14 +328,16 @@ public class MainActivity extends AppCompatActivity
         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id)
         {
             Toast.makeText(MainActivity.this, "group=" + groupPosition + "---child=" + childPosition + "---" + mGroups.get(groupPosition).getChildren().get(childPosition).getChildName(), Toast.LENGTH_SHORT).show();
-            adapter.handleChildCheckBoxClick(groupPosition, childPosition);
+            calculateCount2Show(groupPosition,childPosition,false,ButtonType.CHILD);
+            mSelectedChapterCount.setText(mChildSelectedCount + "");
             return false;
         }
 
         @Override
         public void handleOnChildClicked(int groupPosition, int childPosition)
         {
-            adapter.handleChildCheckBoxClick(groupPosition, childPosition);
+            calculateCount2Show(groupPosition,childPosition,false,ButtonType.CHILD);
+            mSelectedChapterCount.setText(mChildSelectedCount + "");
         }
     }
 
