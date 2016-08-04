@@ -5,6 +5,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity
     private TextView mTotalNeed2PayCountTV;
 
     private boolean mIsAllSelected = false;
+
+    private Button mBtnSettlelUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity
                 child.setChildName("Warchaser");
                 child.setCharge("free");
                 child.setPrice(1.00f);
+                child.setContentId("0x123456");
 
                 children.add(child);
             }
@@ -104,6 +108,8 @@ public class MainActivity extends AppCompatActivity
 
         mTitleBarCheckBox = (CheckBox) findViewById(R.id.cb_titleBar_checkBox);
         mExpandableListView.setGroupIndicator(null);
+
+        mBtnSettlelUp = (Button) findViewById(R.id.btn_settleUp);
 
         mIndicatorClickHandler = new IndicatorClickHandler(this);
 
@@ -162,6 +168,35 @@ public class MainActivity extends AppCompatActivity
 
         adapter.setOnGroupClickListener(mOnGroupClickListener);
         adapter.setOnChildClickListener(mOnChildClickListener);
+
+        mBtnSettlelUp.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ArrayList<String> list = new ArrayList<String>();
+
+                int size = mGroups.size();
+
+                for(int i = 0; i < size; i++)
+                {
+                    Group group = mGroups.get(i);
+
+                    int childrenSize = group.getChildren().size();
+
+                    for(int y = 0; y < childrenSize; y++)
+                    {
+                        Child child = group.getChildren().get(y);
+
+                        if(child.getIsChildChecked())
+                        {
+                            list.add(child.getContentId());
+                        }
+                    }
+                }
+                System.out.println(" ");
+            }
+        });
     }
 
     private void calculateCount2Show(int groupPosition, int childPosition, boolean buttonSelected, ButtonType buttonType)

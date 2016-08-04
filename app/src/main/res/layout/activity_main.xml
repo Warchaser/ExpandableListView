@@ -12,6 +12,13 @@
         android:layout_height="40dip"
         android:orientation="vertical">
 
+        <Button
+            android:id="@+id/btn_settleUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settle up"
+            android:layout_centerHorizontal="true"/>
+
         <CheckBox
             android:id="@+id/cb_titleBar_checkBox"
             android:layout_width="wrap_content"
