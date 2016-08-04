@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity
         {
             case ALL:
 
-                int sizeALL = mGroups.size();
+                int sizeALL_LEVEL = mGroups.size();
                 mTotalNeed2PayCount = 0;
 
                 if(buttonSelected)
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity
                     mChildSelectedCount = 0;
                 }
 
-                for(int i = 0; i < sizeALL; i++)
+                for(int i = 0; i < sizeALL_LEVEL; i++)
                 {
                     Group group = mGroups.get(i);
 
@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity
 
                         if(buttonSelected)
                         {
-                            mTotalNeed2PayCount += group.getChildren().get(y).getPrice();
+                            mTotalNeed2PayCount += child.getPrice();
                         }
 
                         child.setIsChildChecked(buttonSelected);
@@ -270,14 +270,16 @@ public class MainActivity extends AppCompatActivity
                 {
                     for(int i = 0; i < sizeGroup; i++)
                     {
-                        if(!groupGROUPLEVEL.getChildren().get(i).getIsChildChecked())
+                        Child child = groupGROUPLEVEL.getChildren().get(i);
+
+                        if(!child.getIsChildChecked())
                         {
-                            operationPriceGroup += groupGROUPLEVEL.getChildren().get(i).getPrice();
+                            operationPriceGroup += child.getPrice();
 
                             operationSelectedCount += 1;
                         }
 
-                        groupGROUPLEVEL.getChildren().get(i).setIsChildChecked(true);
+                        child.setIsChildChecked(true);
                     }
 
                     mTotalNeed2PayCount += operationPriceGroup;
@@ -287,14 +289,16 @@ public class MainActivity extends AppCompatActivity
                 {
                     for(int i = 0; i < sizeGroup; i++)
                     {
-                        if(groupGROUPLEVEL.getChildren().get(i).getIsChildChecked())
+                        Child child = groupGROUPLEVEL.getChildren().get(i);
+
+                        if(child.getIsChildChecked())
                         {
-                            operationPriceGroup += groupGROUPLEVEL.getChildren().get(i).getPrice();
+                            operationPriceGroup += child.getPrice();
 
                             operationSelectedCount += 1;
                         }
 
-                        groupGROUPLEVEL.getChildren().get(i).setIsChildChecked(false);
+                        child.setIsChildChecked(false);
                     }
 
                     mTotalNeed2PayCount -= operationPriceGroup;
