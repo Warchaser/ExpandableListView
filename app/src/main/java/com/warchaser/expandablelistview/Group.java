@@ -106,7 +106,7 @@ public class Group
         return mChildrenCheckedCount;
     }
 
-    public void setChidrenCheckedCount(int count)
+    public void setChildrenCheckedCount(int count)
     {
         mChildrenCheckedCount = count;
     }

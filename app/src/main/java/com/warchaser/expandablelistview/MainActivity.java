@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity
 
     private Button mBtnSettlelUp;
 
+    private int mToastLong = Toast.LENGTH_LONG;
+    private int mToastShort = Toast.LENGTH_SHORT;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -174,6 +177,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
+                if(mChildSelectedCount == 0)
+                {
+                    showToast("你啥也妹选啊，大妹子～", mToastLong);
+                    return ;
+                }
+
                 ArrayList<String> list = new ArrayList<String>();
 
                 int size = mGroups.size();
@@ -194,7 +203,6 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 }
-                System.out.println(" ");
             }
         });
     }
@@ -227,11 +235,11 @@ public class MainActivity extends AppCompatActivity
 
                     if(buttonSelected)
                     {
-                        group.setChidrenCheckedCount(childrenSize);
+                        group.setChildrenCheckedCount(childrenSize);
                     }
                     else
                     {
-                        group.setChidrenCheckedCount(0);
+                        group.setChildrenCheckedCount(0);
                     }
 
                     for(int y = 0; y < childrenSize; y++)
@@ -323,6 +331,8 @@ public class MainActivity extends AppCompatActivity
 
         updateTotalViewOnItemClicked();
 
+        updateTheSettleUPButton();
+
         adapter.notifyDataSetChanged();
     }
 
@@ -338,6 +348,14 @@ public class MainActivity extends AppCompatActivity
             {
                 mTitleBarCheckBox.setChecked(mIsAllSelected = false);
             }
+        }
+    }
+
+    private void updateTheSettleUPButton()
+    {
+        if(mChildSelectedCount == 0)
+        {
+            mBtnSettlelUp.setText("请选择");
         }
     }
 
@@ -387,6 +405,16 @@ public class MainActivity extends AppCompatActivity
     {
         DecimalFormat num = new DecimalFormat("##0.00");
         return num.format(number);
+    }
+
+    private void showToast(String str, int duration)
+    {
+        Toast.makeText(this, str, duration).show();
+    }
+
+    private void showToast(int strID, int duration)
+    {
+        Toast.makeText(this, strID, duration).show();
     }
 
     private static class IndicatorClickHandler extends Handler

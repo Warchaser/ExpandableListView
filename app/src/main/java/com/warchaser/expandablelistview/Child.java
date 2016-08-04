@@ -15,6 +15,8 @@ public class Child
 
     private float mPrice;
 
+    private boolean mIsDownloaded;
+
     public Child()
     {
 
@@ -73,5 +75,15 @@ public class Child
     public void setPrice(float mPrice)
     {
         this.mPrice = mPrice;
+    }
+
+    public boolean isDownloaded()
+    {
+        return mIsDownloaded;
+    }
+
+    public void setIsDownloaded(boolean isDownloaded)
+    {
+        this.mIsDownloaded = isDownloaded;
     }
 }
