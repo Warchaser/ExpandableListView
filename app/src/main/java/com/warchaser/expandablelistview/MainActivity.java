@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -32,7 +33,9 @@ public class MainActivity extends AppCompatActivity
 
     private int mTotalChapterCount = 0;
 
-    private int mIntTotalNeed2PayCount = 0;
+    private float mTotalNeed2PayCount = 0;
+
+    private TextView mTotalNeed2PayCountTV;
 
     private boolean mIsAllSelected = false;
 
@@ -97,6 +100,7 @@ public class MainActivity extends AppCompatActivity
         mExpandableListView = (ExpandableListView)findViewById(R.id.expendlist);
 
         mSelectedChapterCount = (TextView) findViewById(R.id.tv_totalCount);
+        mTotalNeed2PayCountTV = (TextView) findViewById(R.id.tv_totalNeed2PayCount);
 
         mTitleBarCheckBox = (CheckBox) findViewById(R.id.cb_titleBar_checkBox);
         mExpandableListView.setGroupIndicator(null);
@@ -151,6 +155,8 @@ public class MainActivity extends AppCompatActivity
                 mTitleBarCheckBox.setChecked(mIsAllSelected);
 
                 mSelectedChapterCount.setText(mChildSelectedCount + "");
+
+                mTotalNeed2PayCountTV.setText(getFloatWith2Decimals(mTotalNeed2PayCount));
             }
         });
 
@@ -165,7 +171,7 @@ public class MainActivity extends AppCompatActivity
             case ALL:
 
                 int sizeALL = mGroups.size();
-                mIntTotalNeed2PayCount = 0;
+                mTotalNeed2PayCount = 0;
 
                 if(buttonSelected)
                 {
@@ -199,10 +205,7 @@ public class MainActivity extends AppCompatActivity
 
                         if(buttonSelected)
                         {
-                            if(!child.getIsChildChecked())
-                            {
-                                mIntTotalNeed2PayCount += group.getChildren().get(y).getPrice();
-                            }
+                            mTotalNeed2PayCount += group.getChildren().get(y).getPrice();
                         }
 
                         child.setIsChildChecked(buttonSelected);
@@ -212,46 +215,46 @@ public class MainActivity extends AppCompatActivity
                 break;
             case GROUP:
 
-                Group group = mGroups.get(groupPosition);
-                group.toggle();
+                Group groupGROUPLEVEL = mGroups.get(groupPosition);
+                groupGROUPLEVEL.toggle();
 
-                int sizeGroup = group.getChildren().size();
+                int sizeGroup = groupGROUPLEVEL.getChildren().size();
                 int operationPriceGroup = 0;
                 int operationSelectedCount = 0;
-                boolean groupIsChecked = group.getIsGroupChecked();
+                boolean groupIsChecked = groupGROUPLEVEL.getIsGroupChecked();
 
                 if(groupIsChecked)
                 {
                     for(int i = 0; i < sizeGroup; i++)
                     {
-                        if(!group.getChildren().get(i).getIsChildChecked())
+                        if(!groupGROUPLEVEL.getChildren().get(i).getIsChildChecked())
                         {
-                            operationPriceGroup += group.getChildren().get(i).getPrice();
+                            operationPriceGroup += groupGROUPLEVEL.getChildren().get(i).getPrice();
 
                             operationSelectedCount += 1;
                         }
 
-                        group.getChildren().get(i).setIsChildChecked(true);
+                        groupGROUPLEVEL.getChildren().get(i).setIsChildChecked(true);
                     }
 
-                    mIntTotalNeed2PayCount += operationPriceGroup;
+                    mTotalNeed2PayCount += operationPriceGroup;
                     mChildSelectedCount += operationSelectedCount;
                 }
                 else
                 {
                     for(int i = 0; i < sizeGroup; i++)
                     {
-                        if(group.getChildren().get(i).getIsChildChecked())
+                        if(groupGROUPLEVEL.getChildren().get(i).getIsChildChecked())
                         {
-                            operationPriceGroup += group.getChildren().get(i).getPrice();
+                            operationPriceGroup += groupGROUPLEVEL.getChildren().get(i).getPrice();
 
                             operationSelectedCount += 1;
                         }
 
-                        group.getChildren().get(i).setIsChildChecked(false);
+                        groupGROUPLEVEL.getChildren().get(i).setIsChildChecked(false);
                     }
 
-                    mIntTotalNeed2PayCount -= operationPriceGroup;
+                    mTotalNeed2PayCount -= operationPriceGroup;
                     mChildSelectedCount -= operationSelectedCount;
                 }
 
@@ -266,12 +269,12 @@ public class MainActivity extends AppCompatActivity
 
                 if(checked)
                 {
-                    mIntTotalNeed2PayCount += mGroups.get(groupPosition).getChildren().get(childPosition).getPrice();
+                    mTotalNeed2PayCount += mGroups.get(groupPosition).getChildren().get(childPosition).getPrice();
                     mChildSelectedCount += 1;
                 }
                 else
                 {
-                    mIntTotalNeed2PayCount -= mGroups.get(groupPosition).getChildren().get(childPosition).getPrice();
+                    mTotalNeed2PayCount -= mGroups.get(groupPosition).getChildren().get(childPosition).getPrice();
                     mChildSelectedCount -= 1;
                 }
 
@@ -311,6 +314,7 @@ public class MainActivity extends AppCompatActivity
 //            adapter.handleGroupCheckBoxClick(groupPosition);
             calculateCount2Show(groupPosition,0,false,ButtonType.GROUP);
             mSelectedChapterCount.setText(mChildSelectedCount + "");
+            mTotalNeed2PayCountTV.setText(getFloatWith2Decimals(mTotalNeed2PayCount));
             return true;
         }
 
@@ -319,6 +323,7 @@ public class MainActivity extends AppCompatActivity
         {
             calculateCount2Show(groupPosition,0,false,ButtonType.GROUP);
             mSelectedChapterCount.setText(mChildSelectedCount + "");
+            mTotalNeed2PayCountTV.setText(getFloatWith2Decimals(mTotalNeed2PayCount));
         }
     }
 
@@ -330,6 +335,7 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(MainActivity.this, "group=" + groupPosition + "---child=" + childPosition + "---" + mGroups.get(groupPosition).getChildren().get(childPosition).getChildName(), Toast.LENGTH_SHORT).show();
             calculateCount2Show(groupPosition,childPosition,false,ButtonType.CHILD);
             mSelectedChapterCount.setText(mChildSelectedCount + "");
+            mTotalNeed2PayCountTV.setText(getFloatWith2Decimals(mTotalNeed2PayCount));
             return false;
         }
 
@@ -338,7 +344,14 @@ public class MainActivity extends AppCompatActivity
         {
             calculateCount2Show(groupPosition,childPosition,false,ButtonType.CHILD);
             mSelectedChapterCount.setText(mChildSelectedCount + "");
+            mTotalNeed2PayCountTV.setText(getFloatWith2Decimals(mTotalNeed2PayCount));
         }
+    }
+
+    private String getFloatWith2Decimals(float number)
+    {
+        DecimalFormat num = new DecimalFormat("##0.00");
+        return num.format(number);
     }
 
     private static class IndicatorClickHandler extends Handler

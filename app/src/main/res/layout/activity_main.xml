@@ -45,6 +45,16 @@
         android:layout_alignParentBottom="true">
 
         <TextView
+            android:id="@+id/tv_totalNeed2PayCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dip"
+            android:text="123"/>
+
+        <TextView
             android:id="@+id/tv_totalCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

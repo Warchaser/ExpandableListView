@@ -32,6 +32,8 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
 
     private IOnGroupClickListener mOnGroupClickListener;
 
+    private boolean mIsAllSelected = false;
+
     public MyExpandableListViewAdapter(Context context, ArrayList<Group> groups, Handler handler)
     {
         this.context = context;
@@ -355,30 +357,30 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
         notifyDataSetChanged();
     }
 
-//    public boolean selectOrDeSelectALL()
-//    {
-//        mIsAllSelected = !mIsAllSelected;
-//
-//        int size = mGroups.size();
-//
-//        for(int i = 0; i < size; i++)
-//        {
-//            Group group = mGroups.get(i);
-//
-//            group.setIsGroupChecked(mIsAllSelected);
-//
-//            int childrenSize = group.getChildren().size();
-//
-//            for(int y = 0; y < childrenSize; y++)
-//            {
-//                group.getChildren().get(y).setIsChildChecked(mIsAllSelected);
-//            }
-//        }
-//
-//        notifyDataSetChanged();
-//
-//        return mIsAllSelected;
-//    }
+    private boolean selectOrDeSelectALL()
+    {
+        mIsAllSelected = !mIsAllSelected;
+
+        int size = mGroups.size();
+
+        for(int i = 0; i < size; i++)
+        {
+            Group group = mGroups.get(i);
+
+            group.setIsGroupChecked(mIsAllSelected);
+
+            int childrenSize = group.getChildren().size();
+
+            for(int y = 0; y < childrenSize; y++)
+            {
+                group.getChildren().get(y).setIsChildChecked(mIsAllSelected);
+            }
+        }
+
+        notifyDataSetChanged();
+
+        return mIsAllSelected;
+    }
 
     public void setOnGroupClickListener(IOnGroupClickListener listener)
     {
