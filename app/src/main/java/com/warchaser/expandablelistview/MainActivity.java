@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity
 
     private ArrayList<Group> mGroups;
 
-    private IndicatorClickHandler mIndicatorClickHandler;
-
     private CheckBox mTitleBarCheckBox;
 
     private int mChildSelectedCount;
@@ -59,10 +57,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy()
     {
-        if(mIndicatorClickHandler != null)
-        {
-            mIndicatorClickHandler.removeCallbacksAndMessages(null);
-        }
         super.onDestroy();
     }
 
@@ -114,9 +108,7 @@ public class MainActivity extends AppCompatActivity
 
         mBtnSettlelUp = (Button) findViewById(R.id.btn_settleUp);
 
-        mIndicatorClickHandler = new IndicatorClickHandler(this);
-
-        adapter = new MyExpandableListViewAdapter(MainActivity.this, mGroups, mIndicatorClickHandler);
+        adapter = new MyExpandableListViewAdapter(MainActivity.this, mGroups);
 
         mExpandableListView.setAdapter(adapter);
 
@@ -381,6 +373,19 @@ public class MainActivity extends AppCompatActivity
             calculateCount2Show(groupPosition,0,false,ButtonType.GROUP);
             mSelectedChapterCount.setText(mChildSelectedCount + "");
             mTotalNeed2PayCountTV.setText(getFloatWith2Decimals(mTotalNeed2PayCount));
+        }
+
+        @Override
+        public void handleOnGroupIndicatorClicked(int groupPosition, boolean isExpanded)
+        {
+            if(isExpanded)
+            {
+                mExpandableListView.collapseGroup(groupPosition);
+            }
+            else
+            {
+                mExpandableListView.expandGroup(groupPosition);
+            }
         }
     }
 

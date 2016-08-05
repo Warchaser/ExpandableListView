@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,6 +38,12 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
         this.context = context;
         this.mGroups = groups;
         this.mHandler = handler;
+    }
+
+    public MyExpandableListViewAdapter(Context context, ArrayList<Group> groups)
+    {
+        this.context = context;
+        this.mGroups = groups;
     }
 
     /**
@@ -182,26 +187,28 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
             groupHolder.img.setBackgroundResource(R.mipmap.group_open_two);
         }
 
-        groupHolder.img.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Message msg = new Message();
-                msg.arg1 = groupPosition;
+//        groupHolder.img.setOnClickListener(new View.OnClickListener()
+//        {
+//            @Override
+//            public void onClick(View v)
+//            {
+//                Message msg = new Message();
+//                msg.arg1 = groupPosition;
+//
+//                if(isExpanded)
+//                {
+//                    msg.arg2 = 1;
+//                }
+//                else
+//                {
+//                    msg.arg2 = 0;
+//                }
+//
+//                mHandler.sendMessage(msg);
+//            }
+//        });
 
-                if(isExpanded)
-                {
-                    msg.arg2 = 1;
-                }
-                else
-                {
-                    msg.arg2 = 0;
-                }
-
-                mHandler.sendMessage(msg);
-            }
-        });
+        groupHolder.img.setOnClickListener(new GroupIndicatorClickedListener(groupPosition, isExpanded));
 
         groupHolder.txt.setText(mGroups.get(groupPosition).getGroupName());
         groupHolder.mCheckBox.setFocusable(false);
@@ -355,6 +362,43 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
 
         // 注意，一定要通知 ExpandableListView 資料已經改變，ExpandableListView 會重新產生畫面
         notifyDataSetChanged();
+    }
+
+    private class GroupIndicatorClickedListener implements View.OnClickListener
+    {
+        private int mGroupPosition;
+        private boolean mIsExpanded;
+
+        GroupIndicatorClickedListener(int groupPosition, boolean isExpanded)
+        {
+            this.mGroupPosition = groupPosition;
+            this.mIsExpanded = isExpanded;
+        }
+
+        @Override
+        public void onClick(View v)
+        {
+            if(mOnGroupClickListener != null)
+            {
+                mOnGroupClickListener.handleOnGroupIndicatorClicked(mGroupPosition, mIsExpanded);
+            }
+            else if(mHandler != null)
+            {
+                Message msg = new Message();
+                msg.arg1 = mGroupPosition;
+
+                if(mIsExpanded)
+                {
+                    msg.arg2 = 1;
+                }
+                else
+                {
+                    msg.arg2 = 0;
+                }
+
+                mHandler.sendMessage(msg);
+            }
+        }
     }
 
     private boolean selectOrDeSelectALL()

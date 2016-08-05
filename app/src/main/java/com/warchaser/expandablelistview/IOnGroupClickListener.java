@@ -8,4 +8,6 @@ import android.widget.ExpandableListView;
 public interface IOnGroupClickListener extends ExpandableListView.OnGroupClickListener
 {
     void handleOnGroupClicked(int groupPosition);
+
+    void handleOnGroupIndicatorClicked(int groupPosition, boolean isExpanded);
 }
