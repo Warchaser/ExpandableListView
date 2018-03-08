@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -171,6 +172,7 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
             groupHolder.txt = (TextView)convertView.findViewById(R.id.txt);
             groupHolder.img = (ImageView)convertView.findViewById(R.id.img);
             groupHolder.mCheckBox = (CheckBox) convertView.findViewById(R.id.checkbox_group);
+            groupHolder.mLyImg = (LinearLayout) convertView.findViewById(R.id.ly_img);
             convertView.setTag(groupHolder);
         }
         else
@@ -208,7 +210,7 @@ class MyExpandableListViewAdapter extends BaseExpandableListAdapter
 //            }
 //        });
 
-        groupHolder.img.setOnClickListener(new GroupIndicatorClickedListener(groupPosition, isExpanded));
+        groupHolder.mLyImg.setOnClickListener(new GroupIndicatorClickedListener(groupPosition, isExpanded));
 
         groupHolder.txt.setText(mGroups.get(groupPosition).getGroupName());
         groupHolder.mCheckBox.setFocusable(false);
@@ -449,6 +451,8 @@ class GroupHolder
     public CheckBox mCheckBox;
 
     public TextView txt;
+
+    public LinearLayout mLyImg;
 
     public ImageView img;
 }

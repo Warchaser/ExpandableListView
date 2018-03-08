@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity
 
     private int mToastLong = Toast.LENGTH_LONG;
     private int mToastShort = Toast.LENGTH_SHORT;
+    private final int STEP_LENGTH = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,16 +69,16 @@ public class MainActivity extends AppCompatActivity
         Group group;
         Child child;
 
-        for(int i = 0; i < 20; i++)
+        for(int i = 0; i < 63; i++)
         {
             group = new Group();
 
             children = new ArrayList<Child>();
 
-            for(int y = 0; y < 20; y++)
+            for(int y = 0; y < STEP_LENGTH; y++)
             {
                 child = new Child();
-                child.setChildName("Warchaser");
+                child.setChildName(i * STEP_LENGTH + y + 1 + "");
                 child.setCharge("free");
                 child.setPrice(1.00f);
                 child.setContentId("0x123456");
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity
 
             group.setChildren(children);
             group.setGroupCharge("free");
-            group.setGroupName("1~20");
+            group.setGroupName(i * STEP_LENGTH + 1 + "~" + mTotalChapterCount);
 
             mGroups.add(group);
         }
